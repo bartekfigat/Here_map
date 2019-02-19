@@ -16,16 +16,21 @@
     <title>Document</title>
   </head>
   <body>
-    <form action="/" method="GET">
-      <input type="text" name="search" />
+    <form action="/" method="POST">
+      <input type="text" name="city" />
       <button class="btn">Submit</button>
     </form>
 
     <h1>index</h1>
-    <p><%= weather.temperature %></p>
-    <p><%= weather.city %></p>
-    <p><%= weather.description %></p>
-    <img src="<%= weather.iconLink %>" alt="" />
+    <% if(weather) { %>
+      <p><%= weather.temperature %></p>
+      <p><%= weather.city %></p>
+      <p><%= weather.description %></p>
+      <img src="<%= weather.iconLink %>" alt="" />
+    <% } else { %>
+      <p>Not found</p>
+    <% } %>
+
     <script type="text/javascript" src="main.js"></script>
   </body>
 </html>
