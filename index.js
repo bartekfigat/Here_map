@@ -24,44 +24,44 @@ app.use(express.static(path.join(__dirname, "public")));
 const appId = process.env.app_id;
 const appCode = process.env.app_code;
 
-app.get("/", (req, res) => {
-  const url = `https://weather.api.here.com/weather/1.0/report.json?app_id=${appId}&app_code=${appCode}&product=observation&name=Berlin`;
+const displayWeatherData = (req, res, city) => {
+  const url = `https://weather.api.here.com/weather/1.0/report.json?app_id=${appId}&app_code=${appCode}&product=observation&name=${city || 'Berlin'}`;
 
   fetch(url)
-    .then(res => {
-      return res.json();
+    .then(data => {
+      return data.json();
     })
     .then(data => {
-      const displayWeatherData = {
-        temperature: Math.round(
-          data.observations.location[0].observation[0].temperature
-        ),
-        city: data.observations.location[0].city,
-        description: data.observations.location[0].observation[0].description,
-        iconLink: data.observations.location[0].observation[0].iconLink
-      };
-      res.render("index", { weather: displayWeatherData });
+      const { observations } = data;
+
+      if (observations) {
+        const location = observations.location[0];
+        const weather = {
+          temperature: Math.round(
+            location.observation[0].temperature
+          ),
+          city: location.city,
+          description: location.observation[0].description,
+          iconLink: location.observation[0].iconLink
+        };
+        res.render("index", { weather });
+      } else {
+        res.render("index", { weather: null });
+      }
     })
     .catch(err => {
       console.log("Error", err.message);
     });
+}
+
+app.get("/", (req, res) => {
+  displayWeatherData(req, res, null);
 });
 
 app.post("/", (req, res) => {
-  let city = req.body.city;
+  const city = req.body.city;
 
-  displayWeatherData
-    .create(city)
-    .then(newCity => {
-      if (newCity) {
-        res.redirect("index");
-      } else {
-        console.error("Error", err);
-      }
-    })
-    .catch(err => {
-      console.error("Error", err);
-    });
+  displayWeatherData(req, res, city);
 });
 
 //liveReload
