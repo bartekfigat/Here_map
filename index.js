@@ -25,7 +25,7 @@ const appId = process.env.app_id;
 const appCode = process.env.app_code;
 
 const displayWeatherData = (req, res, city) => {
-  const url = `https://weather.api.here.com/weather/1.0/report.json?app_id=${appId}&app_code=${appCode}&product=observation&name=${city ||
+  const url = `https://weather.api.here.com/weather/1.0/report.json?app_id=NEKfgdnivkFddPStIUXC&app_code=0gi7i6DsTcMLCn_rxdQu1w&product=observation&name=${city ||
     " "}`;
 
   fetch(url)
