@@ -25,7 +25,8 @@ const appId = process.env.app_id;
 const appCode = process.env.app_code;
 
 const displayWeatherData = (req, res, city) => {
-  const url = `https://weather.api.here.com/weather/1.0/report.json?app_id=${appId}&app_code=${appCode}&product=observation&name=${city || 'Berlin'}`;
+  const url = `https://weather.api.here.com/weather/1.0/report.json?app_id=${appId}&app_code=${appCode}&product=observation&name=${city ||
+    " "}`;
 
   fetch(url)
     .then(data => {
@@ -37,9 +38,7 @@ const displayWeatherData = (req, res, city) => {
       if (observations) {
         const location = observations.location[0];
         const weather = {
-          temperature: Math.round(
-            location.observation[0].temperature
-          ),
+          temperature: Math.round(location.observation[0].temperature),
           city: location.city,
           description: location.observation[0].description,
           iconLink: location.observation[0].iconLink
@@ -52,7 +51,7 @@ const displayWeatherData = (req, res, city) => {
     .catch(err => {
       console.log("Error", err.message);
     });
-}
+};
 
 app.get("/", (req, res) => {
   displayWeatherData(req, res, null);
