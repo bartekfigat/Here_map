@@ -1,15 +1,13 @@
 require("dotenv").config({ path: ".env" });
 const express = require("express");
-const bodyParser = require("body-parser");
-const morgan = require("morgan");
-const path = require("path");
-const cors = require("cors");
-const fetch = require("node-fetch");
-const app = express();
-
-app.use(morgan("tiny"));
-
-// view engine setup
+(bodyParser = require("body-parser")),
+  (morgan = require("morgan")),
+  (path = require("path")),
+  (cors = require("cors")),
+  (fetch = require("node-fetch")),
+  (app = express()),
+  // view engine setup
+  app.use(morgan("tiny"));
 app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "ejs");
 // Staic file
@@ -21,21 +19,23 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, "public")));
 
-const appId = process.env.app_id;
-const appCode = process.env.app_code;
+const appId = process.env.appId;
+const appCode = process.env.appCode;
 
 const displayWeatherData = (req, res, city) => {
   const url = `https://weather.api.here.com/weather/1.0/report.json?app_id=${appId}&app_code=${appCode}&product=observation&name=${city ||
-    " "}`;
+    ""}`;
 
   fetch(url)
-    .then(data => {
-      return data.json();
+    .then(response => {
+      return response.json();
     })
     .then(data => {
       const { observations } = data;
 
-      if (observations) {
+      if (!observations || observations === null) {
+        res.render("index", { weather: null });
+      } else {
         const location = observations.location[0];
         const weather = {
           temperature: Math.round(location.observation[0].temperature),
@@ -44,12 +44,11 @@ const displayWeatherData = (req, res, city) => {
           iconLink: location.observation[0].iconLink
         };
         res.render("index", { weather });
-      } else {
-        res.render("index", { weather: null });
       }
     })
     .catch(err => {
-      console.log("Error", err.message);
+      console.log("Error", err);
+      res.redirect("/");
     });
 };
 
